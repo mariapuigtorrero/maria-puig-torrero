@@ -77,6 +77,16 @@ export async function getLegalNoticeBody() {
 }
 
 
+export async function getProjectsForSitemap() {
+  const { data } = await sanityFetch({
+    query: `*[_type == "project" && defined(slug.current)]{
+      "slug": slug.current,
+      gallery
+    }`,
+  })
+  return (data ?? []) as { slug: string; gallery?: any[] }[]
+}
+
 export async function getWorkProjects() {
   const { data } = await sanityFetch({
     query: `*[_type == "project"] | order(title asc){

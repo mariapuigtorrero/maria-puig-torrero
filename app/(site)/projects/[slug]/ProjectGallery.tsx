@@ -9,13 +9,12 @@ import { getImageDimensions } from '@/lib/getImageDimensions'
 const LIGHTBOX_WIDTH_DESKTOP = 1800
 const LIGHTBOX_WIDTH_MOBILE = 1200
 
-// En móvil, en vez de disparar la descarga de TODAS las miniaturas de golpe
-// (algunas galerías tienen 20+ fotos), solo se cargan de inicio las primeras
-// (lo que se ve nada más entrar) y el resto se van pidiendo progresivamente
-// según el usuario se acerca haciendo scroll, con margen de sobra para que
-// no se note espera. En escritorio se mantiene el comportamiento de siempre.
-const MOBILE_EAGER_THUMBNAIL_COUNT = 2
-const MOBILE_PRELOAD_MARGIN = '1200px'
+// Las miniaturas siempre llevan su URL real en el HTML (importante para que
+// Google pueda indexar las imágenes de cada proyecto), pero solo las primeras
+// se cargan de inicio ("eager"); el resto usa la carga diferida nativa del
+// navegador ("loading=lazy"), que descarga cada imagen justo antes de que
+// entre en pantalla, sin necesidad de JavaScript ni de ocultar su URL.
+const EAGER_THUMBNAIL_COUNT = 2
 
 export default function ProjectGallery({
   images,
@@ -27,9 +26,6 @@ export default function ProjectGallery({
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [visible, setVisible] = useState<boolean[]>(() => images.map(() => false))
   const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false))
-  const [shouldLoad, setShouldLoad] = useState<boolean[]>(() =>
-    images.map((_, i) => i < MOBILE_EAGER_THUMBNAIL_COUNT)
-  )
   const [isMobile, setIsMobile] = useState(false)
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
@@ -58,45 +54,6 @@ export default function ProjectGallery({
     mql.addEventListener('change', handler)
     return () => mql.removeEventListener('change', handler)
   }, [])
-
-  // En escritorio no hace falta escalonar la carga: se piden todas desde el
-  // principio, como siempre.
-  useEffect(() => {
-    if (isMobile) return
-    setShouldLoad(images.map(() => true))
-  }, [isMobile, images])
-
-  // En móvil, ir marcando como "a cargar" cada miniatura según se acerca al
-  // viewport (con bastante margen de antelación), en vez de todas a la vez.
-  useEffect(() => {
-    if (!isMobile) return
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement
-            const index = Number(el.dataset.index)
-            setShouldLoad((prev) => {
-              if (prev[index]) return prev
-              const next = [...prev]
-              next[index] = true
-              return next
-            })
-            observer.unobserve(entry.target)
-          }
-        })
-      },
-      { rootMargin: `0px ${MOBILE_PRELOAD_MARGIN} 0px ${MOBILE_PRELOAD_MARGIN}`, threshold: 0 }
-    )
-
-    thumbRefs.current.forEach((el) => {
-      if (el) observer.observe(el)
-    })
-
-    return () => observer.disconnect()
-  }, [isMobile, images.length])
-
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -361,9 +318,9 @@ export default function ProjectGallery({
                   }
                 }}
                 data-index={i}
-                src={shouldLoad[i] ? urlFor(image).width(800).quality(95).auto('format').url() : undefined}
+                src={urlFor(image).width(800).quality(95).auto('format').url()}
                 alt={title}
-                loading="eager"
+                loading={i < EAGER_THUMBNAIL_COUNT ? 'eager' : 'lazy'}
                 fetchPriority={i === 0 ? 'high' : 'auto'}
                 onLoad={() =>
                   setLoaded((prev) => {
