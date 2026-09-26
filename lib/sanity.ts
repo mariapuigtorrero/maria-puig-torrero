@@ -62,6 +62,20 @@ export async function getLegalNoticeSeo() {
   return ((data as any)?.seo ?? null) as any
 }
 
+export async function getAboutContent() {
+  const { data } = await sanityFetch({
+    query: `*[_type == "aboutPage"][0]{ bio, contact, social }`,
+  })
+  return (data ?? null) as { bio?: any; contact?: any; social?: any } | null
+}
+
+export async function getLegalNoticeBody() {
+  const { data } = await sanityFetch({
+    query: `*[_type == "legalNoticePage"][0]{ body }`,
+  })
+  return ((data as any)?.body ?? null) as any
+}
+
 
 export async function getWorkProjects() {
   const { data } = await sanityFetch({
