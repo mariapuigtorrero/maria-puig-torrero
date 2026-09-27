@@ -1,6 +1,7 @@
 import { urlFor } from '@/sanity/lib/image'
+import type { SanityImage } from './types'
 
-export function preloadImages(images: any[] = [], quality = 95, width?: number) {
+export function preloadImages(images: SanityImage[] = [], quality = 95, width?: number) {
   if (typeof window === 'undefined') return
 
   images.forEach((img) => {

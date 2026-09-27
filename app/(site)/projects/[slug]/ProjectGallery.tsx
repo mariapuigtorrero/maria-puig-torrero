@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { urlFor } from '@/sanity/lib/image'
 import { preloadImages } from '@/lib/preloadImages'
 import { getImageDimensions } from '@/lib/getImageDimensions'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
+import type { SanityImage } from '@/lib/types'
 
 
 const LIGHTBOX_WIDTH_DESKTOP = 1800
@@ -20,13 +22,13 @@ export default function ProjectGallery({
   images,
   title,
 }: {
-  images: any[]
+  images: SanityImage[]
   title: string
 }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [visible, setVisible] = useState<boolean[]>(() => images.map(() => false))
   const [loaded, setLoaded] = useState<boolean[]>(() => images.map(() => false))
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobile = useIsMobile()
   const [scale, setScale] = useState(1)
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [cursorSide, setCursorSide] = useState<'left' | 'right' | null>(null)
@@ -36,24 +38,21 @@ export default function ProjectGallery({
   const scrollYRef = useRef(0)
   const baseRectRef = useRef<{ width: number; height: number } | null>(null)
 
-  const close = () => setActiveIndex(null)
-  const showPrev = () =>
-    setActiveIndex((current) =>
-      current === null ? null : (current - 1 + images.length) % images.length
-    )
-  const showNext = () =>
-    setActiveIndex((current) =>
-      current === null ? null : (current + 1) % images.length
-    )
-
-  // Detectar viewport móvil
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 768px)')
-    setIsMobile(mql.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mql.addEventListener('change', handler)
-    return () => mql.removeEventListener('change', handler)
-  }, [])
+  const close = useCallback(() => setActiveIndex(null), [])
+  const showPrev = useCallback(
+    () =>
+      setActiveIndex((current) =>
+        current === null ? null : (current - 1 + images.length) % images.length
+      ),
+    [images.length]
+  )
+  const showNext = useCallback(
+    () =>
+      setActiveIndex((current) =>
+        current === null ? null : (current + 1) % images.length
+      ),
+    [images.length]
+  )
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -76,9 +75,20 @@ export default function ProjectGallery({
   }, [activeIndex, images, isMobile])
 
 
-  useEffect(() => {
+  // Reinicia el zoom/desplazamiento al cambiar de imagen en el lightbox.
+  // Se ajusta directamente durante el render (comparando con el valor
+  // anterior) en vez de en un efecto, siguiendo el patrón que recomienda
+  // React para "resetear estado cuando cambia algo" sin renders en cascada.
+  const [prevActiveIndex, setPrevActiveIndex] = useState(activeIndex)
+  if (activeIndex !== prevActiveIndex) {
+    setPrevActiveIndex(activeIndex)
     setScale(1)
     setOffset({ x: 0, y: 0 })
+  }
+
+  // Los refs no deben tocarse durante el render (solo el estado, arriba);
+  // este sí necesita un efecto porque muta un ref, no estado de React.
+  useEffect(() => {
     baseRectRef.current = null
   }, [activeIndex])
 
@@ -118,7 +128,7 @@ export default function ProjectGallery({
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [activeIndex, images.length])
+  }, [activeIndex, close, showPrev, showNext])
 
   useEffect(() => {
     const observer = new IntersectionObserver(

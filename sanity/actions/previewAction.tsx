@@ -12,7 +12,11 @@ function getPreviewPath(doc: { _type: string; slug?: { current?: string } }): st
   return null;
 }
 
-export const previewAction: DocumentActionComponent = (props: DocumentActionProps) => {
+// Nombrada con mayúscula inicial (PreviewAction) para que el linter de
+// reglas de hooks de React reconozca que aquí dentro se usan hooks
+// (useState, useClient) de forma válida — Sanity la invoca igual que
+// cualquier otro DocumentActionComponent, el nombre no afecta a su uso.
+export const PreviewAction: DocumentActionComponent = (props: DocumentActionProps) => {
   const { draft, published, type } = props;
   const [loading, setLoading] = useState(false);
   const client = useClient({ apiVersion });

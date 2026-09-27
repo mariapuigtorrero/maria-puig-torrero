@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { urlFor } from '@/sanity/lib/image'
+import type { HomeProject } from '@/lib/types'
 
 const ACTIVATION_FRACTION_DESKTOP = 1
 const ACTIVATION_FRACTION_MOBILE = 1
@@ -12,7 +13,7 @@ export default function HomeRow({
   project,
   hideDirection,
 }: {
-  project: any
+  project: HomeProject
   hideDirection: 'hide-right' | 'hide-left'
 }) {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -78,7 +79,7 @@ export default function HomeRow({
  return (
   <Link href={`/projects/${project.slug.current}`} className="home-row">
     <div className={`home-row-track ${hideDirection}`} ref={trackRef}>
-      {project.homeImages?.map((image: any, i: number) => (
+      {project.homeImages?.map((image, i) => (
         <div className="home-row-image" key={i}>
           <img
             src={urlFor(image).width(900).quality(95).auto('format').url()}

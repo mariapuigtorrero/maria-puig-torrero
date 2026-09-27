@@ -13,7 +13,7 @@ import { media, mediaAssetSource } from 'sanity-plugin-media'
 import {dataset, projectId} from './sanity/env'
 import {schema} from './sanity/schemaTypes'
 import {structure} from './sanity/structure'
-import {previewAction} from './sanity/actions/previewAction'
+import {PreviewAction} from './sanity/actions/previewAction'
 import {singletonTypes, singletonDocIds} from './sanity/lib/singletonTypes'
 
 export default defineConfig({
@@ -56,7 +56,7 @@ export default defineConfig({
       if (singletonDocIds.has(context.documentId ?? '')) {
         return prev.filter(({action}) => action && !['delete', 'duplicate'].includes(action))
       }
-      return context.schemaType === 'project' ? [...prev, previewAction] : prev
+      return context.schemaType === 'project' ? [...prev, PreviewAction] : prev
     },
   },
 })

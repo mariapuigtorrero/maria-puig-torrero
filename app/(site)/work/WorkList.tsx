@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { urlFor } from '@/sanity/lib/image'
 import { preloadImages } from '@/lib/preloadImages'
+import { useIsMobile } from '@/lib/hooks/useIsMobile'
+import type { ProjectListItem, SanityCategory } from '@/lib/types'
 
 
 const AUTO_ROTATE_INTERVAL = 2000
@@ -27,7 +29,7 @@ function PreviewImage({ src }: { src: string }) {
   )
 }
 
-function WorkMobileCard({ project, index }: { project: any; index: number }) {
+function WorkMobileCard({ project, index }: { project: ProjectListItem; index: number }) {
   const [imgIndex, setImgIndex] = useState(0)
   const images = project.workPreviewImages ?? []
 
@@ -56,7 +58,7 @@ function WorkMobileCard({ project, index }: { project: any; index: number }) {
   return (
     <Link href={`/projects/${project.slug.current}`} className="work-mobile-card">
       <div className="work-mobile-card-image">
-        {images.map((img: any, i: number) => (
+        {images.map((img, i) => (
           <img
             key={i}
             src={urlFor(img).width(700).quality(95).auto('format').url()}
@@ -79,28 +81,20 @@ export default function WorkList({
   projects,
   categories,
 }: {
-  projects: any[]
-  categories: any[]
+  projects: ProjectListItem[]
+  categories: SanityCategory[]
 }) {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [autoIndex, setAutoIndex] = useState(0)
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
-  const [isMobile, setIsMobile] = useState(false)
+  const isMobile = useIsMobile()
 
   const filteredProjects = selectedCategoryId
     ? projects.filter((p) =>
-      p.categories?.some((c: any) => c._id === selectedCategoryId)
+      p.categories?.some((c) => c._id === selectedCategoryId)
     )
     : projects
 
-  // Detectar viewport móvil
-  useEffect(() => {
-    const mql = window.matchMedia('(max-width: 768px)')
-    setIsMobile(mql.matches)
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
-    mql.addEventListener('change', handler)
-    return () => mql.removeEventListener('change', handler)
-  }, [])
 
 
   useEffect(() => {
@@ -109,10 +103,15 @@ export default function WorkList({
   })
 }, [filteredProjects])
 
-  // Reinicia el índice automático al cambiar de filtro de categoría
-  useEffect(() => {
+  // Reinicia el índice automático al cambiar de filtro de categoría.
+  // Se ajusta durante el render (comparando con el valor anterior) en vez
+  // de en un efecto, siguiendo el patrón que recomienda React para
+  // "resetear estado cuando cambia algo" sin renders en cascada.
+  const [prevCategoryId, setPrevCategoryId] = useState(selectedCategoryId)
+  if (selectedCategoryId !== prevCategoryId) {
+    setPrevCategoryId(selectedCategoryId)
     setAutoIndex(0)
-  }, [selectedCategoryId])
+  }
 
   // Ciclo automático: avanza cada 2s, pausado mientras el usuario tiene el hover fijo o en móvil
   useEffect(() => {
@@ -132,7 +131,7 @@ export default function WorkList({
   const hoveredProject = filteredProjects.find((p) => p._id === activeId)
   const activeCategoryIds = isMobile
     ? new Set()
-    : new Set(hoveredProject?.categories?.map((c: any) => c._id) ?? [])
+    : new Set(hoveredProject?.categories?.map((c) => c._id) ?? [])
 
   const categoriesList = (
     <>

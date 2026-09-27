@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Plantilla de factura</title>
+<style>
+  :root {
+    --text: #000000;
+    --muted: #000000;
+    --line: #000000;
+    --edit-bg: #fff8d6;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #e9e9e9;
+    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 100;
+    color: var(--text);
+  }
+
+  .banner {
+    max-width: 720px;
+    margin: 24px auto 0;
+    padding: 14px 18px;
+    background: #fff8d6;
+    border: 1px solid #e3d38a;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .banner strong { display: block; margin-bottom: 4px; }
+
+  .page {
+    position: relative;
+    width: 210mm;
+    height: 297mm;
+    margin: 24px auto 60px;
+    background: #fff;
+    padding: 13mm 13mm;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.08);
+    font-size: 9pt;
+    line-height: 1.3;
+  }
+
+  [contenteditable="true"] {
+    outline: none;
+    border-radius: 3px;
+    padding: 0 2px;
+    margin: 0 -2px;
+  }
+
+  @media screen {
+    [contenteditable="true"]:hover,
+    [contenteditable="true"]:focus {
+      background: var(--edit-bg);
+    }
+    [data-placeholder="true"] {
+      background: var(--edit-bg);
+    }
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 26px;
+  }
+
+  .issuer p, .invoice-meta p { margin: 0 0 2px; }
+
+  .invoice-meta {
+    text-align: left;
+  }
+
+  .invoice-meta table { border-collapse: collapse; }
+  .invoice-meta td { padding: 0 0 2px; }
+  .invoice-meta td:first-child { color: var(--muted); padding-right: 18px; white-space: nowrap; }
+
+  .parties {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 26px;
+  }
+
+  .parties > div { flex: 1; }
+
+  .label {
+    color: var(--muted);
+    margin: 0 0 6px;
+  }
+
+  .parties p { margin: 0 0 2px; }
+
+  .billing-block {
+    border-top: 0.2px solid var(--line);
+    border-bottom: 0.2px solid var(--line);
+    padding: 25px 0;
+  }
+
+  table.items {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+  }
+
+  table.items thead th {
+    text-align: left;
+    font-weight: 400;
+    color: var(--muted);
+    padding-bottom: 6px;
+  }
+
+  table.items thead th.num,
+  table.items tbody td.num {
+    text-align: right;
+  }
+
+  table.items tbody td {
+    padding: 6px 0;
+    vertical-align: top;
+  }
+
+  .totals {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 4px;
+  }
+
+  .totals td {
+    padding: 3px 0;
+  }
+
+  .totals td.label {
+    color: var(--muted);
+    text-align: right;
+    padding-right: 16px;
+    width: 70%;
+  }
+
+  .totals td.value {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .totals tr.total td {
+    padding-top: 6px;
+  }
+
+  .payment {
+    margin-top: 220px;
+  }
+
+  .payment p { margin: 0 0 2px; }
+
+  .footer-phone {
+    position: absolute;
+    left: 13mm;
+    bottom: 13mm;
+    margin: 0;
+    font-size: 9pt;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .banner { display: none; }
+    .page {
+      margin: 0;
+      box-shadow: none;
+      width: auto;
+      min-height: auto;
+    }
+    [contenteditable="true"] { background: transparent !important; }
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+</style>
+</head>
+<body>
+
+  <div class="banner">
+    <strong>Cómo usar esta plantilla</strong>
+    Rellena o edita directamente sobre el documento (haz clic en cualquier texto resaltado en amarillo y escribe). Cuando esté todo listo, imprime con Cmd+P → "Guardar como PDF" (el resaltado amarillo y este aviso no aparecen en el PDF).
+  </div>
+
+  <div class="page">
+
+    <div class="header">
+      <div class="issuer">
+        <p contenteditable="true">Elvis Fabricio Chicaiza Anchatuña</p>
+        <p contenteditable="true">Web Development and Graphic Design</p>
+        <p contenteditable="true">48689374F</p>
+        <p contenteditable="true">donthillhere@gmail.com</p>
+        <p contenteditable="true">Barranquet 5, 44</p>
+        <p contenteditable="true">46930 Valencia, España</p>
+        <p contenteditable="true">+34669347035</p>
+      </div>
+
+      <div class="invoice-meta">
+        <table>
+          <tr>
+            <td>Factura N.º</td>
+            <td contenteditable="true" data-placeholder="true">FA2026XXX</td>
+          </tr>
+          <tr>
+            <td>Fecha de factura:</td>
+            <td contenteditable="true" data-placeholder="true">DD.MM.AA</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="parties">
+      <div>
+        <p class="label">Cliente:</p>
+        <p contenteditable="true" data-placeholder="true">Nombre del cliente</p>
+        <p contenteditable="true" data-placeholder="true">DNI/NIF</p>
+        <p contenteditable="true" data-placeholder="true">Dirección</p>
+        <p contenteditable="true" data-placeholder="true">Código postal, Ciudad, Provincia</p>
+        <p contenteditable="true" data-placeholder="true">email@cliente.com</p>
+        <p contenteditable="true" data-placeholder="true">+34 000 000 000</p>
+      </div>
+
+      <div>
+        <p class="label">Descripción:</p>
+        <p contenteditable="true" data-placeholder="true">Cliente - Diseño y desarrollo de página web</p>
+        <p contenteditable="true" data-placeholder="true">Proyecto con importe total de 0,00 € (IVA incluido)</p>
+        <p contenteditable="true" data-placeholder="true">Factura correspondiente a [anticipo / pago final] X/3 del importe total</p>
+        <p contenteditable="true" data-placeholder="true">Referencia presupuesto: PR00000</p>
+      </div>
+    </div>
+
+    <div class="billing-block">
+      <table class="items">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th class="num">Cantidad:</th>
+            <th class="num">Precio:</th>
+            <th class="num">Subtotal:</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true" data-placeholder="true">Concepto de la línea (p.ej. Anticipo 1/3 proyecto diseño y desarrollo web)</td>
+            <td class="num" contenteditable="true" data-placeholder="true">1</td>
+            <td class="num" contenteditable="true" data-placeholder="true">0,00 €</td>
+            <td class="num" contenteditable="true" data-placeholder="true">0,00 €</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="totals">
+        <tr>
+          <td class="label">Base imponible:</td>
+          <td class="value" contenteditable="true" data-placeholder="true">0,00 €</td>
+        </tr>
+        <tr>
+          <td class="label">IVA (21%):</td>
+          <td class="value" contenteditable="true" data-placeholder="true">0,00 €</td>
+        </tr>
+        <tr>
+          <td class="label">IRPF (7%):</td>
+          <td class="value" contenteditable="true" data-placeholder="true">-0,00 €</td>
+        </tr>
+        <tr class="total">
+          <td class="label">Total:</td>
+          <td class="value" contenteditable="true" data-placeholder="true">0,00 €</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="payment">
+      <p class="label">Forma de pago:</p>
+      <p contenteditable="true">Transferencia bancaria</p>
+      <p contenteditable="true">Titular: Elvis Fabricio Chicaiza Anchatuña</p>
+      <p contenteditable="true">IBAN: ES80 2100 6031 3813 0001 4578</p>
+      <p contenteditable="true" data-placeholder="true">Concepto: PR00000 - [Descripción del pago]</p>
+    </div>
+
+    <p class="footer-phone" contenteditable="true">+34669347035</p>
+
+  </div>
+
+</body>
+</html>

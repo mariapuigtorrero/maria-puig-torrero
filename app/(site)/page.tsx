@@ -33,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <main className="home-main">
-      {projects.map((project: any, rowIndex: number) => (
+      {projects.map((project, rowIndex) => (
         <HomeRow
           key={project._id}
           project={project}
