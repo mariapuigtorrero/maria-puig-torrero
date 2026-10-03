@@ -9,6 +9,10 @@ const DEFAULT_DESCRIPTION =
   'María Puig Torrero is a Spanish based Photographer, Creative and Art Director.'
 const DEFAULT_IMAGE = '/images/maria-puig-profile.webp'
 
+// Se revalida sola cada minuto, igual que el resto de páginas con contenido
+// editable desde el Studio (Home, Work, Legal Notice y cada proyecto).
+export const revalidate = 60
+
 const aboutTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p className="about-text">{children}</p>,

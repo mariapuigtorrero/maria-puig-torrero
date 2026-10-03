@@ -8,6 +8,12 @@ const DEFAULT_DESCRIPTION =
   'María Puig Torrero is a Spanish based Photographer, Creative and Art Director.'
 const DEFAULT_IMAGE = '/images/maria-puig-profile.webp'
 
+// Se revalida sola cada minuto: sin esto, la página queda estática desde el
+// build y los cambios de orden/proyectos en el Studio solo se verían en
+// producción si la conexión en vivo con Sanity llega a disparar una
+// revalidación (y en local no hace falta, porque el dev server no cachea).
+export const revalidate = 60
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getHomeSeo()
 

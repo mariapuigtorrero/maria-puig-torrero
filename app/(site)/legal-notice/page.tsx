@@ -8,6 +8,10 @@ const DEFAULT_DESCRIPTION =
   'Legal notice and terms of use for the María Puig Torrero photography portfolio website.'
 const DEFAULT_IMAGE = '/images/maria-puig-profile.webp'
 
+// Se revalida sola cada minuto, igual que el resto de páginas con contenido
+// editable desde el Studio (Home, Work, About y cada proyecto).
+export const revalidate = 60
+
 const legalTextComponents: PortableTextComponents = {
   block: {
     normal: ({ children }) => <p className="legal-text">{children}</p>,

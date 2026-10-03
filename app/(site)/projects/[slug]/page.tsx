@@ -8,9 +8,10 @@ import ProjectGallery from './ProjectGallery'
 // Pre-renderiza todas las páginas de proyecto como estáticas (ISR) en vez de
 // generarlas de nuevo en cada visita: una visita normal (o de un bot) recibe
 // una copia ya cacheada, sin gastar cuota de Sanity/Vercel por cada request.
-// Se revalida sola cada 5 minutos, y la vista previa de borradores (draft
-// mode) sigue funcionando en tiempo real igualmente, sin verse afectada.
-export const revalidate = 300
+// Se revalida sola cada minuto, igual que el resto de páginas con contenido
+// editable desde el Studio, y la vista previa de borradores (draft mode)
+// sigue funcionando en tiempo real igualmente, sin verse afectada.
+export const revalidate = 60
 
 export async function generateStaticParams() {
   const projects = await getAllProjectSlugs()
