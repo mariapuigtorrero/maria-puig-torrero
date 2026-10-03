@@ -8,7 +8,7 @@ export default defineType({
   icon: HomeIcon,
   preview: {
     prepare() {
-      return { title: 'Orden proyectos' }
+      return { title: 'Home' }
     },
   },
   fields: [
