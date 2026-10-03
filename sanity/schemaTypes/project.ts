@@ -76,7 +76,7 @@ export default defineType({
       title: 'SEO',
       type: 'seo',
       group: undefined,
-      options: { collapsible: true, collapsed: true },
+      options: { collapsible: false },
     }),
   ],
 })
