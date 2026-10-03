@@ -44,13 +44,11 @@ export default defineType({
           },
         },
       ],
-      description: 'Si se deja vacío, se usará el texto por defecto.',
     }),
     defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
-      description: 'Si se deja vacío, se usarán los textos e imagen por defecto de la página.',
     }),
   ],
 })

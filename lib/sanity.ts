@@ -98,16 +98,35 @@ export async function getProjectsForSitemap() {
 }
 
 export async function getWorkProjects() {
+  // El orden manual (arrastrar y soltar en el documento "Work" del Studio)
+  // tiene prioridad; cualquier proyecto que todavía no se haya añadido a esa
+  // lista aparece igualmente, al final y ordenado por título, para que un
+  // proyecto nuevo nunca deje de aparecer en Work por no haberlo ordenado
+  // todavía.
+  const projectFields = `{
+    _id,
+    title,
+    slug,
+    categories[]->{ _id, name },
+    workPreviewImages
+  }`
+
   const { data } = await sanityFetch({
-    query: `*[_type == "project"] | order(title asc){
-      _id,
-      title,
-      slug,
-      categories[]->{ _id, name },
-      workPreviewImages
+    query: `{
+      "ordered": *[_type == "workPage"][0].order[]->${projectFields},
+      "all": *[_type == "project"] | order(title asc)${projectFields}
     }`,
   })
-  return (data ?? []) as ProjectListItem[]
+
+  const { ordered, all } = (data ?? {}) as {
+    ordered?: ProjectListItem[]
+    all?: ProjectListItem[]
+  }
+
+  const orderedIds = new Set((ordered ?? []).map((p) => p._id))
+  const remaining = (all ?? []).filter((p) => !orderedIds.has(p._id))
+
+  return [...(ordered ?? []), ...remaining]
 }
 
 export async function getCategories() {

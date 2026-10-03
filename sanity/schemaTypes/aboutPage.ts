@@ -41,7 +41,6 @@ export default defineType({
           },
         },
       ],
-      description: 'Si se deja vacío, se usará el texto por defecto.',
     }),
     defineField({
       name: 'contact',
@@ -71,7 +70,6 @@ export default defineType({
           },
         },
       ],
-      description: 'Si se deja vacío, se usará el texto por defecto (con el email de contacto).',
     }),
     defineField({
       name: 'social',
@@ -101,13 +99,11 @@ export default defineType({
           },
         },
       ],
-      description: 'Si se deja vacío, se usarán los enlaces por defecto (Instagram y Linkedin).',
     }),
     defineField({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
-      description: 'Si se deja vacío, se usarán los textos e imagen por defecto de la página.',
     }),
   ],
 })

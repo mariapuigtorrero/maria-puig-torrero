@@ -14,6 +14,7 @@ import {dataset, projectId} from './sanity/env'
 import {schema} from './sanity/schemaTypes'
 import {structure} from './sanity/structure'
 import {PreviewAction} from './sanity/actions/previewAction'
+import {CascadeDeleteAction} from './sanity/actions/cascadeDeleteAction'
 import {singletonTypes, singletonDocIds} from './sanity/lib/singletonTypes'
 
 export default defineConfig({
@@ -56,7 +57,16 @@ export default defineConfig({
       if (singletonDocIds.has(context.documentId ?? '')) {
         return prev.filter(({action}) => action && !['delete', 'duplicate'].includes(action))
       }
-      return context.schemaType === 'project' ? [...prev, PreviewAction] : prev
+      if (context.schemaType === 'project') {
+        // Sustituye la acción "Eliminar" por defecto por una versión que,
+        // antes de borrar, quita automáticamente las referencias al
+        // proyecto en otros documentos (p. ej. el orden de la Home).
+        const withCascadeDelete = prev.map((action) =>
+          action.action === 'delete' ? CascadeDeleteAction : action
+        )
+        return [...withCascadeDelete, PreviewAction]
+      }
+      return prev
     },
   },
 })

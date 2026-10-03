@@ -22,7 +22,6 @@ export default defineType({
       name: 'seo',
       title: 'SEO',
       type: 'seo',
-      description: 'Si se deja vacío, se usarán los textos e imagen por defecto de la home.',
     }),
   ],
 })
